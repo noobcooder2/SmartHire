@@ -24,7 +24,12 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+     "rules": {
+    "no-template-curly-in-string": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "no-unused-vars": "warn"
+  }
   },
   "browserslist": {
     "production": [

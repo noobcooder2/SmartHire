@@ -19,7 +19,7 @@ const Register = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, formData);
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {

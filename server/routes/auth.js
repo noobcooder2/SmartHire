@@ -57,4 +57,26 @@ router.post('/login', async (req, res) => {
   }
 });
 
+const protect = require('../middleware/auth');
+
+// Update profile (skills, bio)
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const { skills, bio } = req.body;
+    const skillsArray = Array.isArray(skills)
+      ? skills
+      : skills.split(',').map(s => s.trim()).filter(Boolean);
+
+    const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { skills: skillsArray, bio },
+    { returnDocument: 'after' }
+  ).select('-password');
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
