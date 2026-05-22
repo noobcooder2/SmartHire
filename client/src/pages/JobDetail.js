@@ -5,17 +5,18 @@ import { useAuth } from '../context/AuthContext';
 
 const JobDetail = () => {
   const { id } = useParams();
-  // eslint-disable-next-line no-unused-vars
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [applying, setApplying] = useState(false);
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/${id}`);
+        const res = await axios.get(`http://localhost:5000/api/jobs/${id}`);
         setJob(res.data);
       } catch (err) {
         console.error(err);
@@ -27,7 +28,19 @@ const JobDetail = () => {
 
   const handleApply = async () => {
     if (!user) return navigate('/login');
-    setMessage('✅ Applied successfully! Recruiter will contact you soon.');
+    setApplying(true);
+    setError('');
+    try {
+      await axios.post(
+        'http://localhost:5000/api/applications/apply',
+        { jobId: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessage('✅ Applied successfully! Check your dashboard for status updates.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Application failed. Try again.');
+    }
+    setApplying(false);
   };
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
@@ -54,13 +67,15 @@ const JobDetail = () => {
         <p className="text-gray-400 text-sm mt-4">Posted by: {job.recruiter?.name}</p>
 
         {message && <div className="mt-4 bg-green-100 text-green-700 px-4 py-3 rounded-lg">{message}</div>}
+        {error && <div className="mt-4 bg-red-100 text-red-600 px-4 py-3 rounded-lg">{error}</div>}
 
         {user?.role === 'candidate' && !message && (
           <button
             onClick={handleApply}
-            className="mt-6 bg-blue-700 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-600 transition"
+            disabled={applying}
+            className="mt-6 bg-blue-700 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-600 transition disabled:opacity-60"
           >
-            Apply Now
+            {applying ? 'Applying...' : 'Apply Now'}
           </button>
         )}
 

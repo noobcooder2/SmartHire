@@ -6,25 +6,36 @@ const RecruiterDashboard = () => {
   const { token } = useAuth();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const headers = { Authorization: `Bearer ${token}` };
 
-  useEffect(() => { fetchApplications(); }, []);
-
-  const fetchApplications = async () => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/applications/recruiter`, { headers });
-      setApplications(res.data);
-    } catch (err) { console.error(err); }
-    setLoading(false);
-  };
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/applications/recruiter', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('Applications fetched:', res.data);
+        setApplications(res.data);
+      } catch (err) {
+        console.error('Recruiter fetch error:', err.response?.data || err.message);
+      }
+      setLoading(false);
+    };
+    fetchApplications();
+  }, [token]);
 
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/api/applications/${id}/status`, { status }, { headers });
+      await axios.put(
+        `http://localhost:5000/api/applications/${id}/status`,
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setApplications(prev =>
         prev.map(app => app._id === id ? { ...app, status } : app)
       );
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const statusColor = (status) => {
@@ -39,7 +50,6 @@ const RecruiterDashboard = () => {
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Recruiter Dashboard</h1>
-
         {applications.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-md p-8 text-center text-gray-500">
             No applications yet. Share your job listings to get candidates.
@@ -62,9 +72,6 @@ const RecruiterDashboard = () => {
                         ))}
                       </div>
                     )}
-                    {app.candidate?.bio && (
-                      <p className="text-gray-500 text-sm mt-2 italic">"{app.candidate.bio}"</p>
-                    )}
                     <p className="text-gray-400 text-xs mt-2">
                       Applied: {new Date(app.createdAt).toLocaleDateString()}
                     </p>
@@ -78,16 +85,12 @@ const RecruiterDashboard = () => {
                         onClick={() => updateStatus(app._id, 'shortlisted')}
                         disabled={app.status === 'shortlisted'}
                         className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-green-400 transition disabled:opacity-40"
-                      >
-                        Shortlist
-                      </button>
+                      >Shortlist</button>
                       <button
                         onClick={() => updateStatus(app._id, 'rejected')}
                         disabled={app.status === 'rejected'}
                         className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-400 transition disabled:opacity-40"
-                      >
-                        Reject
-                      </button>
+                      >Reject</button>
                     </div>
                   </div>
                 </div>

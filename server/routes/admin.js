@@ -12,7 +12,7 @@ router.get('/stats', protect, async (req, res) => {
 
     const users = await User.countDocuments();
     const jobs = await Job.countDocuments();
-    const applications = await Application.countDocuments();
+    const applications = await Application.countDocuments(); 
     const recruiters = await User.countDocuments({ role: 'recruiter' });
     const candidates = await User.countDocuments({ role: 'candidate' });
 
@@ -22,4 +22,4 @@ router.get('/stats', protect, async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = router; 

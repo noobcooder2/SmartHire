@@ -21,8 +21,8 @@ const Dashboard = () => {
   }, []);
 
   const fetchApplications = async () => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/applications/my`, { headers });
+  try {
+      const res = await axios.get('http://localhost:5000/api/applications/my', { headers });
       setApplications(res.data);
     } catch (err) { console.error(err); }
   };
