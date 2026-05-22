@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const JobDetail = () => {
   const { id } = useParams();
+  // eslint-disable-next-line no-unused-vars
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
