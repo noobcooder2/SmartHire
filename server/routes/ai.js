@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const protect = require('../middleware/auth');
 const Job = require('../models/Job');
-const User = require('../models/User');
+const User = require('../models/user');
 
 // Helper: score a job based on skill match
 const scoreJob = (jobSkills, userSkills) => {
